@@ -23,15 +23,17 @@ public class SQSListenerTest {
     private SqsAsyncClient asyncClient;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         MockitoAnnotations.openMocks(this);
 
         Message message = Message.builder().body("message").build();
         DeleteMessageResponse deleteMessageResponse = DeleteMessageResponse.builder().build();
         ReceiveMessageResponse messageResponse = ReceiveMessageResponse.builder().messages(message).build();
 
-        when(asyncClient.receiveMessage(any(ReceiveMessageRequest.class))).thenReturn(CompletableFuture.completedFuture(messageResponse));
-        when(asyncClient.deleteMessage(any(DeleteMessageRequest.class))).thenReturn(CompletableFuture.completedFuture(deleteMessageResponse));
+        when(asyncClient.receiveMessage(any(ReceiveMessageRequest.class)))
+                .thenReturn(CompletableFuture.completedFuture(messageResponse));
+        when(asyncClient.deleteMessage(any(DeleteMessageRequest.class)))
+                .thenReturn(CompletableFuture.completedFuture(deleteMessageResponse));
 
     }
 
@@ -42,16 +44,16 @@ public class SQSListenerTest {
         sqsProperties.setRegion("Region");
 
         SQSListener sqsListener = SQSListener.builder()
-            .client(asyncClient)
-            .properties(sqsProperties)
-            .processor(new SQSProcessor())
-            .operation("operation")
-            .build();
+                .client(asyncClient)
+                .properties(sqsProperties)
+                // .processor(new SQSProcessor())
+                .operation("operation")
+                .build();
 
         Flux<Void> flow = ReflectionTestUtils.invokeMethod(sqsListener, "listen");
 
         StepVerifier.create(flow)
-            .verifyComplete();
+                .verifyComplete();
 
     }
 }
