@@ -14,7 +14,6 @@ import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class DynamoDBTemplateAdapter
@@ -67,8 +66,9 @@ public class DynamoDBTemplateAdapter
     }
 
     @Override
-    public void updateStatus(String email, String newStatus) {
-
+    public Mono<Void> updateStatus(User user) {
+        this.save(user);
+        return Mono.empty();
     }
 
     @Override

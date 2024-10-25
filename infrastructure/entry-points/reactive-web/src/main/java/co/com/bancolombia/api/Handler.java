@@ -40,9 +40,9 @@ public class Handler {
     }
 
     public Mono<ServerResponse> listenUpdate(ServerRequest serverRequest) {
-        return Mono.fromRunnable(() -> userUseCase.update(serverRequest.pathVariable("id")))
-                .then(ServerResponse.ok().bodyValue("Update in process"))
+        return userUseCase.update(serverRequest.pathVariable("id"))
+                .flatMap(user -> ServerResponse.ok().bodyValue("UPDATING"))
                 .onErrorResume(e -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .bodyValue("Error al actualizar el usuario: " + e.getMessage()));
+                        .bodyValue(e.getMessage()));
     }
 }

@@ -11,5 +11,5 @@ public interface UserRepository {
 
     Mono<User> findByEmail(String email);
 
-    void updateStatus(String email, String newStatus);
+    Mono<Void> updateStatus(User user);
 }

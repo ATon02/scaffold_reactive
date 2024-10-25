@@ -20,7 +20,7 @@ public class UserUseCase {
         if (user.getAge() <= 0) {
             return Mono.error(new RuntimeException("AGE IS NOT VALID"));
         }
-        user.setStatus("ACTIVE");
+        // user.setStatus("ACTIVE");
         return userRepository.findByEmail(user.getEmail())
                 .flatMap(existingUser -> Mono.error(new RuntimeException("USER ALREADY EXISTS")))
                 .switchIfEmpty(userRepository.saveUser(user))
@@ -48,8 +48,16 @@ public class UserUseCase {
                 });
     }
 
-    public void update(String id) {
-
+    public Mono<Void> update(String id) {
+        return userRepository.findByEmail(id)
+                .switchIfEmpty(Mono.error(new RuntimeException("USER NOT FOUND")))
+                .flatMap(user -> {
+                    if (user.getStatus().equals("ACTIVE")) {
+                        return Mono.error(new RuntimeException("USER IS ACTIVE"));
+                    }
+                    user.setStatus("ACTIVE");
+                    return userRepository.updateStatus(user);
+                });
     }
 
     public String test() {
